@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Great Challenge Part B</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+       
+        red {
+            color: red
+        }
+        
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Great Challenge Part B: Fuel Tank Problem</h1>
+        <h2>Alexandra McGill</h2>
+    </header>
+
+    <div id='map'></div>
+    
+    <footer>
+        <p>
+        </p>
+    </footer>
+
+<script>
+    
+    
+    var options = {
+            center: [30, 30],
+            zoom: 2
+    }
+    
+    var map = L.map('map', options);
+        
+    var tiles =  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+	subdomains: 'abcd',
+	minZoom: 0,
+	maxZoom: 18,
+	ext: 'png'
+});
+map.addLayer(tiles);
+
+let cities = [
+/*[
+'Philadelphia',
+[39.9526, -75.1652],
+],*/
+[
+'Mexico City',
+[19.4196, -99.1386],
+],
+[
+'Vienna',
+[48.1995, 16.3704],
+],
+[
+'Taipei City',
+[25.0331, 121.5340],
+]
+]
+let coordsPHL = L.latLng(39.9526, -75.1652);
+let coordsMC = L.latLng(19.4196, -99.1386);
+let coordsVN = L.latLng(48.1995, 16.3704);
+let coordsTP = L.latLng(25.0331, 121.5340);
+function calcDistance (latlongA, latlongB) {
+let pointA = L.latLng(latlongA);
+let pointB = L.latLng(latlongB);
+let distance = pointA.distanceTo(pointB);
+return Math.round(distance/1000);
+};
+let distMC = calcDistance(coordsPHL, coordsMC);
+let distVN = calcDistance(coordsPHL, coordsVN);
+let distTP = calcDistance(coordsPHL, coordsTP);
+let distances = [distMC, distVN, distTP];
+/*for (let i = 0; i < cities.length; i++){
+cities[i].push(distances[i]);
+}*/
+function calcGasPct(km){
+let gas = 100000 - 12 * km;
+let pct = Math.round((gas/100000) * 100);
+return pct
+}
+for (let i = 0; i < distances.length; i++){
+cities[i].push(distances[i]);
+let gasPct = calcGasPct(distances[i]);
+cities[i].push(gasPct);
+}
+//console.log(cities);
+for (let i = 0; i < cities.length; i++){
+let popup;
+if ( cities[i][3] < 75){
+popup = "<b style='color:red'>Refill Tank! <b style='color:black'>The plane departing from " + cities[i][0] + " to Philadelphia has travelled " + cities[i][2] + " km. There is only " + cities[i][3] + "% left in the tank."
+} else{
+popup = "<b style='color:black'>The plane departing from " + cities[i][0] + " to Philadelphia has travelled " + cities[i][2] + " km. There is only " + cities[i][3] + "% left in the tank."
+}
+let markers = L.marker(cities[i][1]).bindPopup(popup).addTo(map);
+}
+    
+</script>
+    
+</body>
+
+</html>
